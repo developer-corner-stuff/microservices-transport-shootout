@@ -1,38 +1,34 @@
 package io.arrogantprogrammer;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-@Path("/greetings")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@ApplicationScoped
 public class GreetingResource {
 
     static final Logger LOGGER = LoggerFactory.getLogger(GreetingResource.class);
 
+    @Channel("greetings-verifications")
+    Emitter<GreetingJSON> greetingVerificationsEmitter;
+
     @Inject
     GreetingService greetingService;
 
-    @POST
-    @Transactional
-    public void addGreeting(GreetingJSON greetingJSON) {
-        LOGGER.debug("addGreeting: {}", greetingJSON);
-        greetingService.addGreeting(greetingJSON);
+    @Incoming("greetings-submissions")
+    public void verifyGreeting(GreetingJSON greetingJSON) {
+        LOGGER.debug("greeting submitted: {}", greetingJSON);
+        greetingVerificationsEmitter.send(greetingJSON);
     }
 
-    @GET
-    public List<GreetingJSON> listGreetings() {
-        LOGGER.debug("listGreetings");
-        List<Greeting> allGreetings = Greeting.listAll();
-        LOGGER.debug("listGreetings found {} greetings", allGreetings.size());
-        List<GreetingJSON> greetings = allGreetings.stream().map(greeting -> new GreetingJSON(greeting.text)).toList();
-        LOGGER.debug("listGreetings returning {} greetings", greetings.size());
-        return greetings;
+    @Incoming("greetings-verified")
+    public void addGreeting(GreetingJSON greetingJSON) {
+        Greeting greeting = new Greeting(greetingJSON.text());
+        greeting.persist();
+        LOGGER.debug("persisted greeting: {}", greetingJSON);
     }
 }

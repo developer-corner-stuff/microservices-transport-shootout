@@ -1,17 +1,15 @@
 package io.arrogantprogrammer;
 
+import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("/verify")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@ApplicationScoped
 public class FamilyFriendlyAIResource {
 
     static final Logger LOGGER = LoggerFactory.getLogger(FamilyFriendlyAIResource.class);
@@ -19,10 +17,18 @@ public class FamilyFriendlyAIResource {
     @Inject
     Verifier verifier;
 
-    @GET
-    public boolean verifyGreeting(GreetingJSON greetingJSON) {
+    @Channel("greetings-verified")
+    Emitter<VerifiedGreetingJSON> verifiedGreetingsEmitter;
 
-        LOGGER.debug("verifyGreeting: {}", greetingJSON);
-        return verifier.verifyText(greetingJSON.text());
+    @Incoming("greetings-verifications")
+    public void verifyGreeting(UnverifiedGreetingJSON unverifiedGreetingJSON) {
+
+        LOGGER.debug("verifyGreunverifiedGreeting: {}", unverifiedGreetingJSON);
+        verifier.verifyText(unverifiedGreetingJSON.text()).onItem().transform(isFamilyFriendly -> {
+            LOGGER.debug("isFamilyFriendly: {}", isFamilyFriendly);
+            return isFamilyFriendly;
+        }).subscribe().with(isFamilyFriendly -> {
+            verifiedGreetingsEmitter.send(new VerifiedGreetingJSON(unverifiedGreetingJSON.text(), isFamilyFriendly));
+        });
     }
 }
