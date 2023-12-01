@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -26,11 +27,11 @@ public class AllGreetingsTest {
     @Transactional
     public void setup() {
 
-        Response response = Response.ok().entity(new ArrayList<GreetingJSON>(){{
+        List<GreetingJSON> list = new ArrayList<GreetingJSON>(){{
             add(new GreetingJSON("Hello, World!"));
             add(new GreetingJSON("Hi, there!"));
-        }}).build();
-        Mockito.when(cqrsClient.allGreetings()).thenReturn(response);
+        }};
+        Mockito.when(cqrsClient.allGreetings()).thenReturn(list);
     }
 
     @Test

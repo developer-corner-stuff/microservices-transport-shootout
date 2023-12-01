@@ -1,27 +1,29 @@
 package io.arrogantprogrammer;
 
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Path("/greetings")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class GreetingResource {
 
     static final Logger LOGGER = LoggerFactory.getLogger(GreetingResource.class);
+
+    @Inject
+    GreetingService greetingService;
 
     @POST
     @Transactional
     public void addGreeting(GreetingJSON greetingJSON) {
         LOGGER.debug("addGreeting: {}", greetingJSON);
-        Greeting greeting = new Greeting(greetingJSON.text());
-        greeting.persist();
-        LOGGER.debug("addGreeting persisted: {}", greeting);
+        greetingService.addGreeting(greetingJSON);
     }
 
     @GET
