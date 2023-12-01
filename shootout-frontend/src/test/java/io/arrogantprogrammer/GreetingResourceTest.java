@@ -2,6 +2,7 @@ package io.arrogantprogrammer;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
