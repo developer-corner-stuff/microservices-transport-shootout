@@ -25,10 +25,4 @@ public class GreetingResource {
         greetingVerificationsEmitter.send(greetingJSON);
     }
 
-    @Incoming("greetings-verified")
-    public void addGreeting(GreetingJSON greetingJSON) {
-        Greeting greeting = new Greeting(greetingJSON.text());
-        greeting.persist();
-        LOGGER.debug("persisted greeting: {}", greetingJSON);
-    }
 }

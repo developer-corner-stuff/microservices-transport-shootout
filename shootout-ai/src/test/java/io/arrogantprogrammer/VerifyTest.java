@@ -1,11 +1,16 @@
 package io.arrogantprogrammer;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 public class VerifyTest {
@@ -15,10 +20,21 @@ public class VerifyTest {
 
     @Test
     public void testVerificationLogic() {
-        assertTrue(verifier.verifyText("Hello, Mr. Spock"));
-        assertTrue(verifier.verifyText("Hello, Capt. Kirk"));
-        assertTrue(verifier.verifyText("Hello, Bones"));
-        assertFalse(verifier.verifyText("Hello, VMWare"));
+        verifier.verifyText("Hello, Mr. Spock")
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create()).assertItem(true);
+        verifier.verifyText("Hello, Capt. Kirk")
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create()).assertItem(true);
+        verifier.verifyText("Hello, Bones")
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create()).assertItem(true);
+        verifier.verifyText("Hello, VMWare")
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create()).assertItem(false);
+        verifier.verifyText("Hello, Ubuntu")
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create()).assertItem(false);
     }
 
 }
