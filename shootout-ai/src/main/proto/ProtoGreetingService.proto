@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.arrogantprogrammer.proto";
+option java_outer_classname = "GreetingServiceProto";
+
+package verificationserviceproto;
+
+service ProtoVerificationService {
+    rpc VerifyGreeting (UnverifiedGreetingProto) returns (VerifiedGreetingProto){}
+}
+
+message UnverifiedGreetingProto {
+    string text = 1;
+}
+
+message VerifiedGreetingProto {
+    string text = 1;
+    bool isFamilyFriendly = 2;
+}
