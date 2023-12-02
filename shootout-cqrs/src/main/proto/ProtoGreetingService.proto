@@ -8,8 +8,28 @@ package greetingserviceproto;
 
 service ProtoGreetingService {
     rpc AddGreeting (GreetingProto) returns (GreetingProto){}
+    rpc GetAllGreetings (Empty) returns (AllGreetingProtos){}
 }
 
 message GreetingProto {
     string text = 1;
+}
+
+message Empty {}
+
+message AllGreetingProtos {
+    repeated GreetingProto greetings = 1;
+}
+
+service ProtoVerificationService {
+    rpc VerifyGreeting (UnverifiedGreetingProto) returns (VerifiedGreetingProto){}
+}
+
+message UnverifiedGreetingProto {
+    string text = 1;
+}
+
+message VerifiedGreetingProto {
+    string text = 1;
+    bool isFamilyFriendly = 2;
 }

@@ -1,6 +1,6 @@
 package io.arrogantprogrammer;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import jakarta.persistence.Entity;
 
 @Entity
@@ -15,5 +15,11 @@ public class Greeting extends PanacheEntity {
         this.text = text;
     }
 
+    public String getText() {
+        return text;
+    }
 
+    public void setText(String text) {
+        this.text = text;
+    }
 }
