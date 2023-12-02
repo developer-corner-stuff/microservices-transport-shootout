@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.arrogantprogrammer.proto";
+option java_outer_classname = "GreetingServiceProto";
+
+package greetingserviceproto;
+
+service ProtoGreetingService {
+    rpc AddGreeting (GreetingProto) returns (GreetingProto){}
+}
+
+message GreetingProto {
+    string text = 1;
+}

@@ -1,20 +1,25 @@
 package io.arrogantprogrammer;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import io.arrogantprogrammer.proto.GreetingProto;
+import io.arrogantprogrammer.proto.ProtoGreetingService;
+import io.quarkus.grpc.GrpcClient;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
+@ApplicationScoped
+public class CQRSClient {
 
-@Path("/greetings")
-@RegisterRestClient(configKey = "cqrs")
-public interface CQRSClient {
+    static final Logger LOGGER = LoggerFactory.getLogger(CQRSClient.class);
+    @GrpcClient("cqrs")
+    ProtoGreetingService protoGreetingService;
 
-    @POST
-    public void addGreeting(GreetingJSON greetingJSON);
+    public void addGreeting(GreetingJSON greetingJSON) {
 
-    @GET
-    public List<GreetingJSON> allGreetings();
+        LOGGER.debug("adding greeting: {}", greetingJSON);
+        GreetingProto greetingProto = GreetingProto.newBuilder().setText(greetingJSON.text()).build();
+        protoGreetingService.addGreeting(greetingProto).subscribe().with(result -> {
+            LOGGER.debug("result: {}", result);
+        });
+    }
 }

@@ -1,10 +1,11 @@
 package io.arrogantprogrammer;
 
+import io.arrogantprogrammer.proto.*;
+import io.quarkus.grpc.GrpcClient;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +15,8 @@ import java.util.List;
 @Path("/hello")
 public class GreetingResource {
     
+
     @Inject
-    @RestClient
     CQRSClient cqrsClient;
 
     static final Logger LOGGER = LoggerFactory.getLogger(GreetingResource.class);
@@ -34,14 +35,14 @@ public class GreetingResource {
         return Response.accepted().build();
     }
 
-    @GET
-    @Path("/all")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response allGreetings() {
-        LOGGER.debug("allGreetings");
-        List<GreetingJSON> greetings = cqrsClient.allGreetings();
-        LOGGER.debug("response: {}", greetings);
-        return Response.ok().entity(greetings).build();
-    }
+//    @GET
+//    @Path("/all")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response allGreetings() {
+//        LOGGER.debug("allGreetings");
+//        List<GreetingJSON> greetings = cqrsClient.allGreetings();
+//        LOGGER.debug("response: {}", greetings);
+//        return Response.ok().entity(greetings).build();
+//    }
 
 }
