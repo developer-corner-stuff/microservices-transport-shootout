@@ -20,9 +20,13 @@ public class FamilyFriendlyAIResource {
     Verifier verifier;
 
     @GET
-    public boolean verifyGreeting(GreetingJSON greetingJSON) {
+    public VerifiedGreeting verifyGreeting(GreetingJSON greetingJSON) {
 
         LOGGER.debug("verifyGreeting: {}", greetingJSON);
-        return verifier.verifyText(greetingJSON.text());
+        if(verifier.verifyText(greetingJSON.text())){
+            return new VerifiedGreeting(greetingJSON.text(), true);
+        } else{
+            return new VerifiedGreeting(greetingJSON.text(), false);
+        }
     }
 }

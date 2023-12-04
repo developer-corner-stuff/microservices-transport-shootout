@@ -14,5 +14,5 @@ public interface AIServiceClient {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    boolean isFamilyFriendly(GreetingJSON greetingJSON);
+    VerifiedGreetingJSON isFamilyFriendly(GreetingJSON greetingJSON);
 }

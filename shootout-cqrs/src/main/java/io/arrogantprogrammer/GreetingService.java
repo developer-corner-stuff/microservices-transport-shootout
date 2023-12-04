@@ -18,10 +18,15 @@ public class GreetingService {
     @Transactional
     public void addGreeting(GreetingJSON greetingJSON) {
 
-        if(aiServiceClient.isFamilyFriendly(greetingJSON)){
-            Greeting greeting = new Greeting(greetingJSON.text());
+        VerifiedGreetingJSON verifiedGreetingJSON = aiServiceClient.isFamilyFriendly(greetingJSON);
+        if(verifiedGreetingJSON.isFamilyFriendly()){
+            Greeting greeting = new Greeting(greetingJSON.text(), true);
             greeting.persist();
-            LOGGER.debug("persisted greeting: {}", greetingJSON);
+            LOGGER.debug("persisted family friendly greeting: {}", greetingJSON);
+        }else{
+            Greeting greeting = new Greeting(greetingJSON.text(), false);
+            greeting.persist();
+            LOGGER.debug("persisted non family friendly greeting: {}", greetingJSON);
         }
     }
 }

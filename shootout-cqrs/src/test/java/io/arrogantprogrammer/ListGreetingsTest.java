@@ -18,7 +18,7 @@ public class ListGreetingsTest {
     @Transactional
     public void setup() {
         Greeting.deleteAll();
-        Greeting greeting = new Greeting("Hello");
+        Greeting greeting = new Greeting("Hello", true);
         greeting.persist();
     }
 

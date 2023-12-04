@@ -8,14 +8,21 @@ public class Greeting extends PanacheEntity {
 
     String text;
 
+    boolean isFamilyFriendly;
+
     public Greeting() {
     }
 
-    public Greeting(String text) {
+    public Greeting(String text, boolean isFamilyFriendly){
         this.text = text;
+        this.isFamilyFriendly = isFamilyFriendly;
     }
 
     public String getText() {
         return text;
+    }
+
+    public boolean isFamilyFriendly() {
+        return isFamilyFriendly;
     }
 }
