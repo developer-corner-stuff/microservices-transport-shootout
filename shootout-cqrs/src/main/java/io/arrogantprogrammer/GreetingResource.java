@@ -27,7 +27,8 @@ public class GreetingResource implements ProtoGreetingService {
     @Inject
     GreetingRepository greetingRepository;
 
-    @Override @WithTransaction
+    @Override
+    @WithTransaction
     public Uni<AllGreetingProtos> getAllGreetings(Empty request) {
 
         return allGreetings().onItem().transform(greetingProtos -> {
@@ -47,32 +48,21 @@ public class GreetingResource implements ProtoGreetingService {
         });
     }
 
-    @Override @WithTransaction
+    @Override
+    @WithTransaction
     public Uni<GreetingProto> addGreeting(GreetingProto request) {
 
         return verificationService.verifyGreeting(UnverifiedGreetingProto.newBuilder().setText(request.getText()).build())
                 .onItem()
                 .transform(verifiedGreeting -> {
-                        Greeting greeting = new Greeting(request.getText());
-                        greeting.persistAndFlush();
-                        LOGGER.debug("persisted greeting: {}", greeting);
-                        return greeting;
+                    Greeting greeting = new Greeting(request.getText());
+                    greeting.persistAndFlush();
+                    LOGGER.debug("persisted greeting: {}", greeting);
+                    return greeting;
                 }).onItem().transform(greeting -> {
                     LOGGER.debug("adding greeting: {}", greeting);
                     return GreetingProto.newBuilder().setText(request.getText()).build();
                 });
 
-//        return verificationService.verifyGreeting(UnverifiedGreetingProto.newBuilder().setText(request.getText()).build())
-//                .map(VerifiedGreetingProto::getIsFamilyFriendly)
-//                .map(verifiedGreeting -> {
-//                    if(verifiedGreeting.booleanValue()){
-//                        LOGGER.debug("verified greeting: {}", request);
-//                        Greeting greeting = new Greeting(request.getText());
-//                        greeting.persistAndFlush();
-//                        LOGGER.debug("persisted greeting: {}", request);
-//                    }
-//                    return GreetingProto.newBuilder().setText(request.getText()).build();
-//                });
     }
-
 }
