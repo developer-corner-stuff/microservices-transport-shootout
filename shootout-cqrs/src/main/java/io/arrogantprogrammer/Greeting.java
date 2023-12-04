@@ -15,5 +15,7 @@ public class Greeting extends PanacheEntity {
         this.text = text;
     }
 
-
+    public String getText() {
+        return text;
+    }
 }
