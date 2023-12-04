@@ -27,11 +27,11 @@ public class GreetingResource {
     }
 
     @GET
-    public List<VerifiedGreetingJSON> listGreetings() {
+    public List<GreetingDTO> listGreetings() {
         LOGGER.debug("listGreetings");
         List<Greeting> allGreetings = Greeting.listAll();
         LOGGER.debug("listGreetings found {} greetings", allGreetings.size());
-        List<VerifiedGreetingJSON> greetings = allGreetings.stream().map(greeting -> new VerifiedGreetingJSON(greeting.text, greeting.isFamilyFriendly)).toList();
+        List<GreetingDTO> greetings = allGreetings.stream().map(greeting -> new GreetingDTO(greeting.text, greeting.isFamilyFriendly, greeting.createdAt)).toList();
         LOGGER.debug("listGreetings returning {} greetings", greetings.size());
         return greetings;
     }
