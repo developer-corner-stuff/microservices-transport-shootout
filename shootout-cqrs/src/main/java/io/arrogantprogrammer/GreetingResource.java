@@ -52,17 +52,28 @@ public class GreetingResource implements ProtoGreetingService {
     @WithTransaction
     public Uni<GreetingProto> addGreeting(GreetingProto request) {
 
-        return verificationService.verifyGreeting(UnverifiedGreetingProto.newBuilder().setText(request.getText()).build())
-                .onItem()
-                .transform(verifiedGreeting -> {
-                    Greeting greeting = new Greeting(request.getText());
-                    greeting.persistAndFlush();
-                    LOGGER.debug("persisted greeting: {}", greeting);
-                    return greeting;
-                }).onItem().transform(greeting -> {
-                    LOGGER.debug("adding greeting: {}", greeting);
-                    return GreetingProto.newBuilder().setText(request.getText()).build();
-                });
+        Uni<Greeting> greetingUni = Uni.createFrom().item(new Greeting(request.getText()));
 
+        return greetingUni.onItem().transformToUni(greeting -> {
+            LOGGER.debug("adding greeting: {}", greeting);
+            return verificationService.verifyGreeting(UnverifiedGreetingProto.newBuilder().setText(request.getText()).build())
+                    .flatMap(verified -> {
+                        greeting.verified = verified.getIsFamilyFriendly();
+                        return greeting.persist();
+                    })
+                    .map(res -> GreetingProto.newBuilder().setText(request.getText()).build());
+            });
+//                verificationService.verifyGreeting(UnverifiedGreetingProto.newBuilder().setText(request.getText()).build())
+//                .onItem()
+//                .transform(verifiedGreeting -> {
+//                    Greeting greeting = new Greeting(request.getText());
+//                    greeting.persistAndFlush();
+//                    LOGGER.debug("persisted greeting: {}", greeting);
+//                    return greeting;
+//                }).onItem().transform(greeting -> {
+//                    LOGGER.debug("adding greeting: {}", greeting);
+//                    return GreetingProto.newBuilder().setText(request.getText()).build();
+//                });
+//
     }
 }
